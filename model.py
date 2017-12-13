@@ -1,14 +1,17 @@
 import random
 import operator #helps us to select the second element of a list 
-import matplotlib.pyplot #used to display data on a graph
+import matplotlib.pyplot #as plt #used to display data on a graph
+#matplotlib.pyplot.ion()
 import agentframework
 import csv
 #import sys
 import matplotlib.animation
 
+
 #read in environment data from text file (f) using CSV reader
 f = open ("in.txt", newline='')
 reader= csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
+
 
 #create command line arguments- allows us to input values in command line 
 #num_of_agents = int(sys.argv[1])
@@ -21,6 +24,10 @@ reader= csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
 #prints labels for numbers in command line
 #print('{0} agents, {1} iterations, {2} neighbourhood'.format(num_of_agents, num_of_iterations, neighbourhood))
 
+#create function to work out distance between agents  
+def distance_between(agent0, agent1):
+     return (((agent0[0] - agent1[0])**2) + ((agent0[1] - agent1[1])**2))**0.5
+
 
 # define number of agents and iterations
 num_of_agents = 10
@@ -29,10 +36,12 @@ neighbourhood = 20
 # create a list for agents
 agents = [] 
 
+
 #make an animated model
 fig = matplotlib.pyplot.figure(figsize=(7, 7))
 ax = fig.add_axes([0, 0, 1, 1])
 #ax.set_autoscale_on(False)
+
 
 #create environment list
 environment = []
@@ -44,50 +53,59 @@ for line in reader: #each line in the file
 #this needs to sit within line block         
     environment.append(rowlist)
 
+matplotlib.pyplot.imshow(environment)#shows environment before it's nibbled away
 
 # Make the agents starting anywhere on 100x100 grid
+for i in range(num_of_agents):
+    agents.append([random.randint(0,100),random.randint(0,100)])
 # get list of agents into each agent
 for i in range(num_of_agents):
     agents.append(agentframework.Agent(environment,agents)) #puts environment info into each agent
-#create function to work out distance between agents  
-    def distance_between(agent0, agent1):
-        return (((agent0.x - agent1.x)**2) + ((agent0.y - agent1.y)**2))**0.5          
 
 
+#activate the agent methods
+for j in range(num_of_iterations):
+    random.shuffle(agents)
+    for i in range(num_of_agents):
+        agents[i].move()
+        agents[i].eat()
+        agents[i].share_with_neighbours
+        agents[i].vomit
 
-#carry_on = True
 
 #animation
 def update(frame_number):
     
     fig.clear()
-    matplotlib.pyplot.imshow(environment)
     
-# Move the agents and make them eat (interact with environment)
-#random.shuffle runs through the agents in a random order
-#for j in range(num_of_iterations):
-    #random.shuffle(agents) 
     for i in range(num_of_agents):
-        agents[i].move()
-        agents[i].eat()
-        agents[i].share_with_neighbours(neighbourhood)
-
+        if random.random()<0.5:
+            agents[i][0]=(agents[i][0]+1)%100
+        else:
+            agents[i][0]=(agents[i][0]-1)%100
+        if random.random()<0.5:
+            agents[i][1]=(agents[i][1]+1)%100
+        else:
+            agents[i][1]=(agents[i][1]-1)%100
+            
     for i in range(num_of_agents):
-        matplotlib.pyplot.scatter(agents[i].x,agents[i].y)
-animation = matplotlib.animation.FuncAnimation(fig, update, interval=1)
+        matplotlib.pyplot.scatter(agents[i]._x,agents[i]._y)
+        print(agents[i]._x,agents[i]._y)
+        
+        #matplotlib.pyplot.scatter(agents[i][0],agents[i][1])
+        #print(agents[i][0],agents[i][1])
+        
+global carry_on
 
-"""    
-    global carry_on
-    
-    if random.random() < 0.1:
+
+#carry_on = True
+ 
+      
+if random.random() < 0.01:
         carry_on = False
         print("stopping condition")
+        
     
-    for i in range(num_of_agents):
-        matplotlib.pyplot.scatter(agents[i][0],agents[i][1])
-        #print(agents[i][0],agents[i][1]) 
-     
-   
 # create a stopping function  
 def gen_function(b = [0]):
     a = 0
@@ -95,34 +113,36 @@ def gen_function(b = [0]):
     while (a < 10) & (carry_on) :
         yield a			# Returns control and waits next call.
         a = a + 1
-    
+
+#animate indefinitely
+#animation=matplotlib.animation.FuncAnimation(fig,update,interval=1)        
+
 #stop iterations indefinitely
 animation = matplotlib.animation.FuncAnimation(fig, update, frames=gen_function, repeat=False)
-"""
-
+#plot the agents and show changes in envrionment
 matplotlib.pyplot.show()
 fig.show()
+
 
 #create an agent to prove that agent framework class attached     
 #a = agentframework.Agent(environment,agents)
 #print coordinates of agent (x,y)
 #print (a.x, a.y)
 #a.move()
-#print(a.x, a.y)    
+#print(a.x, a.y) 
 
-    
-#test that it's working by creating plot
-matplotlib.pyplot.imshow(environment)
-matplotlib.pyplot.show()
 
 #display environment data showing it being nibbled away      
 matplotlib.pyplot.xlim(0, 100)
 matplotlib.pyplot.ylim(0, 100)
-matplotlib.pyplot.imshow(environment)
-
+#matplotlib.pyplot.imshow(environment)
 for i in range(num_of_agents):
-    matplotlib.pyplot.scatter(agents[i].x,agents[i].y)
+    matplotlib.pyplot.scatter(agents[i]._x,agents[i]._y)
 matplotlib.pyplot.show()
+
+# matplotlib.pyplot.scatter(agents[i][0],agents[i][1])
+#matplotlib.pyplot.show()
+
 
 for agent0 in agents:
     for agent1 in agents:
@@ -133,7 +153,7 @@ for agent0 in agents:
 consumption = 0
 for agent in agents:
     consumption=(consumption + agents[i].store)
-print("consumption:", consumption)
+print("Total consumption:", consumption)
          
 #close the file           
 f.close()     

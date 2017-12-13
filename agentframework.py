@@ -7,39 +7,72 @@ class Agent:
         self.environment = environment
         self.agents = agents #puts agent info inside itself
         self.store = 0
-        self.x = random.randint(0,100)      
-        self.y = random.randint(0,100)
-#how to protect these using set and get?
+        self._x = random.randint(0,100)      
+        self._y = random.randint(0,100)
+     
 
-#how to randomly shuffle order of agent list?
-#sample(x, k=len(x))
+#object orientated protection of x and y - create set and get properties for _x and _y        
+    def getx(self):
+        return self._x
+     
+    def setx(self, value):
+        self._x = value
+        
+    def delx(self):
+        del self._x
+
+
+    def gety(self):
+        return self._y
+     
+    def sety(self, value):
+        self._y = value
+        
+    def dely(self):
+        del self._y
 
 # create info associated with agents
 # move x coordinate randomly
 # build a torus to stop agents falling off the edge of the environment             
-    def move (self):
+    def move(self):
             if random.random() <0.5:
-                self.x = (self.x + 1) %100
+                self._x = (self._x + 1) %100
             else:
-                self.x = (self.x - 1) %100
+                self._x = (self._x - 1) %100
 # move y coordinate randomly
             if random.random() <0.5:
-                self.y = (self.y + 1) %100
+                self._y = (self._y + 1) %100
             else:
-                self.y = (self.y - 1) %100
+                self._y = (self._y - 1) %100
                 
     #print(move)
 
 
 # add eat method to agents, when agent eats, store increases by 10
+# make agents eat the rest- if environment less than 10, eat one at a time. 
+# will only eat if environment more than 0, avoid negative numbers
     def eat(self):
-            if self.environment [self.y] [self.x] > 10:
-                self.environment [self.y] [self.x] -=10
+            if self.environment [self._y] [self._x] > 10:
+                self.environment [self._y] [self._x] -=10
                 self.store += 10
-    #print(eat)
+            elif self.environment [self._y] [self._x] >0:
+                self.environment [self._y] [self._x] -=1
+                self.store += 1
+    print(eat)
 
-          
-                                      
+# make agents vomit if they eat more than 100 units
+# avoid re-scaling background colour by vomiting less if environment value would exceed 250
+    def vomit(self):      
+            if self.store >= 100:
+                if self.store + self.environment [self._y] [self._x] <250:
+                    self.environment [self._y] [self._x] += (self.store)
+                    self.store -= (self.store)
+                else: 
+                    self.environment [self._y] [self._x] += (250 - self.environment [self._y] [self._x])
+                    self.store -= (250 - self.store)
+                    
+              
+                                                
 #make a behavioural method allowing neighbour interaction
     def share_with_neighbours(self,neighbourhood):
         for agent in self.agents:
@@ -54,7 +87,7 @@ class Agent:
                      
 #pythagoras formula to calculate distance between
     def distance_between(self, agent):
-        return (((self.x - agent.x)**2) + ((self.y - agent.y)**2))**0.5
+        return (((self._x - agent.x)**2) + ((self._y - agent._y)**2))**0.5
 #loop through the agents in self.agents           
 #calculate the distance between self and current other agent
 #end if end loop                
