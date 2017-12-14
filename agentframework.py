@@ -1,14 +1,15 @@
 import random
 
 # create agent class
+#agents generated randomly anywhere within a 300x300 square to match environment
 # link agents to interact with environment  
 class Agent:
     def __init__ (self,environment,agents):
         self.environment = environment
         self.agents = agents #puts agent info inside itself
         self.store = 0
-        self._x = random.randint(0,100)      
-        self._y = random.randint(0,100)
+        self._x = random.randint(0,300)      
+        self._y = random.randint(0,300)
      
 
 #object orientated protection of x and y - create set and get properties for _x and _y        
@@ -18,9 +19,6 @@ class Agent:
     def setx(self, value):
         self._x = value
         
-    def delx(self):
-        del self._x
-
 
     def gety(self):
         return self._y
@@ -28,24 +26,22 @@ class Agent:
     def sety(self, value):
         self._y = value
         
-    def dely(self):
-        del self._y
 
 # create info associated with agents
 # move x coordinate randomly
 # build a torus to stop agents falling off the edge of the environment             
     def move(self):
-            if random.random() <0.5:
-                self._x = (self._x + 1) %100
-            else:
-                self._x = (self._x - 1) %100
+        if random.random() <0.5:
+            self._x = (self._x + 1) %300
+        else:
+            self._x = (self._x - 1) %300
 # move y coordinate randomly
-            if random.random() <0.5:
-                self._y = (self._y + 1) %100
-            else:
-                self._y = (self._y - 1) %100
+        if random.random() <0.5:
+            self._y = (self._y + 1) %300
+        else:
+            self._y = (self._y - 1) %300
                 
-    #print(move)
+    print(move)
 
 
 # add eat method to agents, when agent eats, store increases by 10
@@ -87,7 +83,7 @@ class Agent:
                      
 #pythagoras formula to calculate distance between
     def distance_between(self, agent):
-        return (((self._x - agent.x)**2) + ((self._y - agent._y)**2))**0.5
+        return (((self._x - agent._x)**2) + ((self._y - agent._y)**2))**0.5
 #loop through the agents in self.agents           
 #calculate the distance between self and current other agent
 #end if end loop                
